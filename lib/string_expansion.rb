@@ -10,7 +10,8 @@ module StringExpansion
       parsers = PatternParser.parsers
 
       string.split(/(\[[^\]]+\])/).map do |s|
-        (parsers.find {|p| s =~ p.pattern } || StraightParser).parse(s)
+        (parsers.find {|p| s =~ p.pattern } || StraightParser).
+          parse(s, Regexp.last_match)
       end
     end
 
@@ -27,9 +28,8 @@ module StringExpansion
       [a, b]
     end
 
-    def parse(string)
-      string =~ @pattern
-      a, b = prepare($1, $2)
+    def parse(string, matches)
+      a, b = prepare(matches[1], matches[2])
       a < b ? (a..b).to_a : (b..a).to_a.reverse
     end
   end
@@ -70,7 +70,7 @@ module StringExpansion
   end
 
   module StraightParser
-    def self.parse(string)
+    def self.parse(string, _)
       [string]
     end
   end
