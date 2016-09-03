@@ -24,12 +24,12 @@ module StringExpansion
   end
 
   module SimpleRangeParseAction
-    def prepare(a, b)
-      [a, b]
+    def prepare(matches)
+      matches[1, 2]
     end
 
     def parse(string, matches)
-      a, b = prepare(matches[1], matches[2])
+      a, b = prepare(matches)
       a < b ? (a..b).to_a : (b..a).to_a.reverse
     end
   end
@@ -49,23 +49,20 @@ module StringExpansion
       extend SimpleRangeParseAction
       pattern(/\[(\d+)-(\d+)\]/)
 
-      def self.prepare(*args)
-        return args.map(&:to_i) unless args.any? {|s| s[0] == '0' }
+      def self.prepare(matches)
+        items = matches[1, 2]
+        return items.map(&:to_i) unless items.any? {|s| s[0] == '0' }
 
-        len = args.map(&:length)
+        len = items.map(&:length)
         fmt = "%0#{len.max}d"
-        len[0] == len[1] ? args : args.map {|s| fmt % s.to_i }
+        len[0] == len[1] ? items : items.map {|s| fmt % s.to_i }
       end
     end
 
     module SimpleAlphabetRangeParser
       extend PatternParser
       extend SimpleRangeParseAction
-      pattern(/\[([a-zA-Z]+)-([a-zA-Z]+)\]/)
-
-      def self.prepare(a, b)
-        a.downcase == a ? [a, b.downcase] : [a, b.upcase]
-      end
+      pattern(/\[([a-z]+)-([a-z]+)\]|\[([A-Z]+)-([A-Z]+)\]/)
     end
   end
 
