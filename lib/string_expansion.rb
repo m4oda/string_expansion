@@ -23,10 +23,13 @@ module StringExpansion
   end
 
   module SimpleRangeParseAction
+    def prepare(a, b)
+      [a, b]
+    end
+
     def parse(string)
       string =~ @pattern
-      a, b = [$1, $2]
-      a, b = yield(a, b) if block_given?
+      a, b = prepare($1, $2)
       a < b ? (a..b).to_a : (b..a).to_a.reverse
     end
   end
@@ -45,6 +48,14 @@ module StringExpansion
       extend PatternParser
       extend SimpleRangeParseAction
       pattern(/\[(\d+)-(\d+)\]/)
+
+      def self.prepare(*args)
+        return args.map(&:to_i) unless args.any? {|s| s[0] == '0' }
+
+        len = args.map(&:length)
+        fmt = "%0#{len.max}d"
+        len[0] == len[1] ? args : args.map {|s| fmt % s.to_i }
+      end
     end
 
     module SimpleAlphabetRangeParser
@@ -52,10 +63,8 @@ module StringExpansion
       extend SimpleRangeParseAction
       pattern(/\[([a-zA-Z]+)-([a-zA-Z]+)\]/)
 
-      def self.parse(string)
-        super do |a, b|
-          a.downcase == a ? [a, b.downcase] : [a, b.upcase]
-        end
+      def self.prepare(a, b)
+        a.downcase == a ? [a, b.downcase] : [a, b.upcase]
       end
     end
   end

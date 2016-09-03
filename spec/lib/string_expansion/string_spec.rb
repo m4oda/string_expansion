@@ -46,6 +46,30 @@ RSpec.describe String, "#expand" do
     end
   end
 
+  context 'when String is "[9-10]"' do
+    it 'should return ["9", "10"]' do
+      expect("[9-10]".expand).to eq ["9", "10"]
+    end
+  end
+
+  context 'when String is "[08-10]"' do
+    it 'should return ["08", "09", "10"]' do
+      expect("[08-10]".expand).to eq ["08", "09", "10"]
+    end
+  end
+
+  context 'when String is "[10-08]"' do
+    it 'should return ["10", "09", "08"]' do
+      expect("[10-08]".expand).to eq ["10", "09", "08"]
+    end
+  end
+
+  context 'when String is "[10-8]"' do
+    it 'should return ["10", "9", "8"]' do
+      expect("[10-8]".expand).to eq ["10", "9", "8"]
+    end
+  end
+
   context 'when String is "x[a-c]"' do
     it 'should return ["xa", "xb", "xc"]' do
       expect("x[a-c]".expand).to eq ["xa", "xb", "xc"]
