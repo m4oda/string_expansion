@@ -82,6 +82,18 @@ RSpec.describe String, "#expand" do
     end
   end
 
+  context 'when String is "x[A-C]"' do
+    it 'should return ["xA", "xB", "xC"]' do
+      expect("x[A-C]".expand).to eq ["xA", "xB", "xC"]
+    end
+  end
+
+  context 'when String is "a[Z-X]"' do
+    it 'should return ["aZ", "aY", "aX"]' do
+      expect("a[Z-X]".expand).to eq ["aZ", "aY", "aX"]
+    end
+  end
+
   context 'when String is "x[1-3][a-b]"' do
     it 'should return ["x1a", "x1b", "x2a", "x2b", "x3a", "x3b"]' do
       expect("x[1-3][a-b]".expand).to eq ["x1a", "x1b", "x2a", "x2b", "x3a", "x3b"]

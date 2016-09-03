@@ -63,6 +63,10 @@ module StringExpansion
       extend PatternParser
       extend SimpleRangeParseAction
       pattern(/\[([a-z]+)-([a-z]+)\]|\[([A-Z]+)-([A-Z]+)\]/)
+
+      def self.prepare(matches)
+        matches[1, 4].compact
+      end
     end
   end
 
