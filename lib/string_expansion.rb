@@ -10,7 +10,7 @@ module StringExpansion
       parsers = PatternParser.parsers
 
       string.split(/(\[[^\]]+\])/).map do |s|
-        (parsers.find {|p| s =~ p.pattern } || StraightParser).compile(s)
+        (parsers.find {|p| s =~ p.pattern } || StraightParser).parse(s)
       end
     end
 
@@ -22,8 +22,8 @@ module StringExpansion
     end
   end
 
-  module SimpleRangeCompiler
-    def compile(string)
+  module SimpleRangeParseAction
+    def parse(string)
       string =~ @pattern
       a, b = [$1, $2]
       a, b = yield(a, b) if block_given?
@@ -43,16 +43,16 @@ module StringExpansion
 
     module NaturalNumberRangeParser
       extend PatternParser
-      extend SimpleRangeCompiler
+      extend SimpleRangeParseAction
       pattern(/\[(\d+)-(\d+)\]/)
     end
 
     module SimpleAlphabetRangeParser
       extend PatternParser
-      extend SimpleRangeCompiler
+      extend SimpleRangeParseAction
       pattern(/\[([a-zA-Z]+)-([a-zA-Z]+)\]/)
 
-      def self.compile(string)
+      def self.parse(string)
         super do |a, b|
           a.downcase == a ? [a, b.downcase] : [a, b.upcase]
         end
@@ -61,7 +61,7 @@ module StringExpansion
   end
 
   module StraightParser
-    def self.compile(string)
+    def self.parse(string)
       [string]
     end
   end
