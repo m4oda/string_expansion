@@ -1,7 +1,7 @@
 module StringExpansion
   class << self
     def apply(string)
-      compile(parse(string)).flatten
+      compile(parse(string))
     end
 
     private
@@ -15,7 +15,7 @@ module StringExpansion
     end
 
     def compile(array)
-      return array if array.size <= 1
+      return array.flatten if array.size <= 1
       a1, a2 = array.shift(2)
       a3 = a1.flat_map {|x| a2.map {|y| [x, y].join }}
       compile(array.unshift(a3))
