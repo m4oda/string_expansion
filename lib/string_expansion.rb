@@ -9,7 +9,7 @@ module StringExpansion
     def parse(string)
       parsers = PatternParser.parsers
 
-      string.split(/(\[[^\]]+\])/).map do |s|
+      string.split(/((?<!\\)\[[^\]]+(?<!\\)\])/).map do |s|
         (parsers.find {|p| s =~ p.pattern } || StraightParser).
           parse(s, Regexp.last_match)
       end
@@ -72,7 +72,7 @@ module StringExpansion
 
   module StraightParser
     def self.parse(string, _)
-      [string]
+      [string.gsub(/\\[\[\]]/) {|b| b[-1] }]
     end
   end
 

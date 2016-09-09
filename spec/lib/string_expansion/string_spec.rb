@@ -21,6 +21,12 @@ RSpec.describe String, "#expand" do
     end
   end
 
+  context 'when String is "a\[0-1\]"' do
+    it 'should return ["a[0-1]"]' do
+      expect(%q(a\[0-1\]).expand).to eq ["a[0-1]"]
+    end
+  end
+
   context 'when String is "a[100-110]"' do
     it 'should return an array that begins "a[100]" and ends with "a[110]"' do
       expected = (100..110).to_a.map {|n| "a#{n}" }
